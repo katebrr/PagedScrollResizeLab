@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXFileReference section */
+		A1000001000000000000000E /* PagedScrollResizeLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PagedScrollResizeLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A1000001000000000000000A /* PagedScrollResizeLab */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -120,16 +124,6 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXFileReference section */
-		A1000001000000000000000E /* PagedScrollResizeLab.app */ = {
-			isa = PBXFileReference;
-			explicitFileType = wrapper.application;
-			includeInIndex = 0;
-			path = PagedScrollResizeLab.app;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXFileReference section */
-
 /* Begin XCBuildConfiguration section */
 		A10000010000000000000015 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -235,20 +229,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A10000010000000000000014 /* Build configuration list for PBXProject "PagedScrollResizeLab" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A10000010000000000000015 /* Debug */,
-				A10000010000000000000016 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		A10000010000000000000010 /* Build configuration list for PBXNativeTarget "PagedScrollResizeLab" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A10000010000000000000017 /* Debug */,
 				A10000010000000000000018 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000010000000000000014 /* Build configuration list for PBXProject "PagedScrollResizeLab" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000010000000000000015 /* Debug */,
+				A10000010000000000000016 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
