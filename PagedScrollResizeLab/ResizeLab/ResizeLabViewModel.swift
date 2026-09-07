@@ -33,12 +33,15 @@ final class ResizeLabViewModel {
     return abs(pageRatio - pageRatio.rounded()) < 0.01
   }
 
-  /// Records every write, including the `nil` ones emitted mid-resize.
+  /// Records every write, including the `nil` ones emitted mid-resize and on
+  /// pager teardown. `nil` is logged but never clears the stored selection,
+  /// so the page survives switching between variants.
   func select(_ value: Int?) {
     selectionWrites.append(SelectionWrite(value: value, timestamp: .now))
     if selectionWrites.count > 6 {
       selectionWrites.removeFirst(selectionWrites.count - 6)
     }
+    guard let value else { return }
     selection = value
   }
 
