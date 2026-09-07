@@ -1,6 +1,6 @@
 # Feedback Assistant report (draft)
 
-**Title:** SwiftUI: paged ScrollView (.scrollTargetBehavior(.paging) + .scrollPosition(id:)) loses page alignment when the window is resized on iOS 27
+**Title:** SwiftUI: paged ScrollView (.scrollTargetBehavior(.paging) + .scrollPosition(id:)) loses page alignment when resized on iOS 27
 
 **Area:** SwiftUI / iPadOS windowing
 
