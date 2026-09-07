@@ -50,4 +50,4 @@ Sample project with live instrumentation: **https://github.com/katebrr/PagedScro
 
 1. Is this resize behavior of paged ScrollViews intended, or a bug?
 2. Is there a supported way to anchor a paged ScrollView to its current page across container resizes?
-3. If a manual restore is the right approach today, is there a more robust formulation than `scrollTo` after `Task.yield()`?
+3. If a manual restore is the right approach today, is there a more robust formulation than `scrollTo` after `Task.yield()`? Our current implementation is in the sample at `PagedScrollResizeLab/Workaround/View+ScrollPositionResize.swift`.
