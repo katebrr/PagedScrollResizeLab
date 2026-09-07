@@ -2,16 +2,16 @@ import SwiftUI
 
 /// Horizontal pager built on the standard SwiftUI paging recipe.
 struct ScrollViewPager<Page: View>: View {
-  private let pageCount: Int
+  private let pages: [Int]
   @Binding private var selection: Int?
   private let page: (Int) -> Page
 
   init(
-    pageCount: Int,
+    pages: [Int],
     selection: Binding<Int?>,
     @ViewBuilder page: @escaping (Int) -> Page
   ) {
-    self.pageCount = pageCount
+    self.pages = pages
     _selection = selection
     self.page = page
   }
@@ -19,7 +19,7 @@ struct ScrollViewPager<Page: View>: View {
   var body: some View {
     ScrollView(.horizontal) {
       HStack(spacing: 0) {
-        ForEach(0..<pageCount, id: \.self) { index in
+        ForEach(pages, id: \.self) { index in
           page(index)
             .containerRelativeFrame(.horizontal)
         }

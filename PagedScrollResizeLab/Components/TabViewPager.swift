@@ -2,23 +2,23 @@ import SwiftUI
 
 /// Horizontal pager built on `TabView(.page)`.
 struct TabViewPager<Page: View>: View {
-  private let pageCount: Int
+  private let pages: [Int]
   @Binding private var selection: Int?
   private let page: (Int) -> Page
 
   init(
-    pageCount: Int,
+    pages: [Int],
     selection: Binding<Int?>,
     @ViewBuilder page: @escaping (Int) -> Page
   ) {
-    self.pageCount = pageCount
+    self.pages = pages
     _selection = selection
     self.page = page
   }
 
   var body: some View {
     TabView(selection: nonOptionalSelection) {
-      ForEach(0..<pageCount, id: \.self) { index in
+      ForEach(pages, id: \.self) { index in
         page(index)
           .tag(index)
       }

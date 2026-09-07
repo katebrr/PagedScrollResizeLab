@@ -1,6 +1,11 @@
 import SwiftUI
 
 struct ResizeLabReadout: View {
+  private enum Constants {
+    /// Fixed log height so appending writes never resizes the pager under test.
+    static let logHeight: CGFloat = 112
+  }
+
   private let viewModel: ResizeLabViewModel
 
   init(viewModel: ResizeLabViewModel) {
@@ -10,18 +15,21 @@ struct ResizeLabReadout: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       KeyValueRow("Container width", value: format(viewModel.containerWidth))
-      KeyValueRow("Offset x", value: format(viewModel.contentOffsetX))
+      KeyValueRow("Offset x", value: hasScrollMetrics ? format(viewModel.contentOffsetX) : "–")
       KeyValueRow(
         "Offset ÷ width",
-        value: viewModel.pageRatio.map { String(format: "%.3f", $0) } ?? "–",
-        detail: viewModel.isPageAligned ? "aligned" : "MISALIGNED",
-        emphasized: !viewModel.isPageAligned
+        value: hasScrollMetrics ? ratioDescription : "–",
+        detail: hasScrollMetrics && !viewModel.isPageAligned ? "MISALIGNED" : nil,
+        emphasized: true
       )
-      KeyValueRow("Selection", value: viewModel.selection.map(String.init) ?? "nil")
-      KeyValueRow("Phase", value: viewModel.scrollPhase)
-      KeyValueRow("Fix path", value: fixPathDescription)
+      KeyValueRow("Selection", value: viewModel.currentSelection.map(String.init) ?? "nil")
+      KeyValueRow("Phase", value: hasScrollMetrics ? viewModel.scrollPhase : "–")
+      if viewModel.variant == .fix {
+        KeyValueRow("Fix path", value: fixPathDescription)
+      }
 
       writesLog
+        .frame(height: Constants.logHeight, alignment: .topLeading)
     }
     .padding(.horizontal, 24)
     .contentShape(Rectangle())
@@ -47,6 +55,16 @@ struct ResizeLabReadout: View {
           .monospacedDigit()
       }
     }
+  }
+
+  /// TabView exposes no scroll geometry, so offset-based rows apply only to
+  /// the ScrollView variants.
+  private var hasScrollMetrics: Bool {
+    viewModel.variant != .tabView
+  }
+
+  private var ratioDescription: String {
+    viewModel.pageRatio.map { String(format: "%.3f", $0) } ?? "–"
   }
 
   private var fixPathDescription: String {

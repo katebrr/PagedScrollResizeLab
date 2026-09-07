@@ -6,7 +6,7 @@ struct ResizeLabView: View {
 
   var body: some View {
     VStack(spacing: 16) {
-      Picker("Variant", selection: $viewModel.variant) {
+      Picker("Variant", selection: variantBinding) {
         ForEach(LabVariant.allCases, id: \.self) { Text($0.title) }
       }
       .pickerStyle(.segmented)
@@ -14,7 +14,7 @@ struct ResizeLabView: View {
 
       pager
         .overlay(alignment: .bottom) {
-          PageIndicator(pageCount: viewModel.pageCount, selection: viewModel.selection)
+          PageIndicator(pageCount: viewModel.currentPages.count, selection: viewModel.currentSelection)
         }
         .clipped()
 
@@ -31,17 +31,17 @@ struct ResizeLabView: View {
   private var pager: some View {
     switch viewModel.variant {
     case .scrollView:
-      scrollPager
+      scrollPager(for: .scrollView)
     case .tabView:
       tabPager
     case .fix:
-      scrollPager
-        .preservesScrollPosition(of: viewModel.selection)
+      scrollPager(for: .fix)
+        .preservesScrollPosition(of: viewModel.fixSelection)
     }
   }
 
-  private var scrollPager: some View {
-    ScrollViewPager(pageCount: viewModel.pageCount, selection: selection) {
+  private func scrollPager(for variant: LabVariant) -> some View {
+    ScrollViewPager(pages: viewModel.pages(for: variant), selection: selectionBinding(for: variant)) {
       LabPage(index: $0)
     }
     .onScrollGeometryChange(for: CGFloat.self) { $0.contentOffset.x } action: { _, newValue in
@@ -56,7 +56,7 @@ struct ResizeLabView: View {
   }
 
   private var tabPager: some View {
-    TabViewPager(pageCount: viewModel.pageCount, selection: selection) {
+    TabViewPager(pages: viewModel.tabViewPages, selection: selectionBinding(for: .tabView)) {
       LabPage(index: $0)
     }
     .onGeometryChange(for: CGFloat.self) { $0.size.width } action: {
@@ -64,10 +64,19 @@ struct ResizeLabView: View {
     }
   }
 
-  private var selection: Binding<Int?> {
+  // MARK: - Bindings
+
+  private var variantBinding: Binding<LabVariant> {
     Binding(
-      get: { viewModel.selection },
-      set: { viewModel.select($0) }
+      get: { viewModel.variant },
+      set: { viewModel.switchVariant(to: $0) }
+    )
+  }
+
+  private func selectionBinding(for variant: LabVariant) -> Binding<Int?> {
+    Binding(
+      get: { viewModel.selection(for: variant) },
+      set: { viewModel.select($0, in: variant) }
     )
   }
 }
