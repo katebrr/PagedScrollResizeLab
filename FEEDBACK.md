@@ -28,7 +28,7 @@ On iOS 27, when the app window is resized (resizable windows on iPad), the scrol
 
 `TabView` with `.tabViewStyle(.page)` survives the same resize correctly, but it is not a viable replacement for these pagers (see below).
 
-A sample project reproducing the issue, with live scroll instrumentation and five isolated variants (minimal repro, binding-shim control, production shape, TabView control, and our workaround), is available here: **<REPO_URL>**
+A sample project reproducing the issue, with live scroll instrumentation and five isolated variants (minimal repro, binding-shim control, production shape, TabView control, and our workaround), is available here: **https://github.com/katebrr/PagedScrollResizeLab**
 
 ## Steps to reproduce
 
