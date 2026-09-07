@@ -40,7 +40,7 @@ Sample project with live instrumentation: **https://github.com/katebrr/PagedScro
 
 ## Why not TabView(.page)
 
-`TabView(.page)` handles the resize correctly, but it can't replace these pagers: it offers no `scrollTransition` per-page effects, no pages narrower than the container (`contentMargins` peeking carousels), no inter-page spacing, no `scrollDisabled` to suspend the swipe while a child gesture owns the touch, no scroll-progress observation, and overlays conflict with its safe-area handling.
+`TabView(.page)` handles the resize correctly, but our existing pagers are built around ScrollView APIs that TabView doesn't expose — scroll position and phase observation that our analytics and UI behaviors are plugged into, plus layout and gesture control (page spacing, peeking pages, conditionally disabling the swipe). Moving to TabView would mean losing those integration points, so ScrollView is the base we need to keep.
 
 ## Current workaround
 
