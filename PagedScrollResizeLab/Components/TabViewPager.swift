@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Horizontal pager built on `TabView(.page)`, the resize-surviving control case.
+/// Horizontal pager built on `TabView(.page)`.
 struct TabViewPager<Page: View>: View {
   private let pageCount: Int
   @Binding private var selection: Int?

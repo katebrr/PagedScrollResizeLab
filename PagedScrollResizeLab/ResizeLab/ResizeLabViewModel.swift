@@ -1,10 +1,8 @@
 import Foundation
 import Observation
 
-/// Lab state and scroll instrumentation.
-///
-/// Kept outside view `@State` so per-frame scroll callbacks only invalidate
-/// the views that read them, not the pager itself.
+/// Lab state and scroll instrumentation, kept out of view `@State` so
+/// per-frame scroll callbacks don't rebuild the pager.
 @MainActor
 @Observable
 final class ResizeLabViewModel {
@@ -14,7 +12,13 @@ final class ResizeLabViewModel {
     let timestamp: Date
   }
 
-  let pageCount = 5
+  private enum Constants {
+    static let pageCount = 5
+    /// Readout log length; older writes scroll off.
+    static let maxLoggedWrites = 6
+  }
+
+  let pageCount = Constants.pageCount
 
   var variant: LabVariant = .scrollView
   private(set) var selection: Int? = 0
@@ -33,13 +37,12 @@ final class ResizeLabViewModel {
     return abs(pageRatio - pageRatio.rounded()) < 0.01
   }
 
-  /// Records every write, including the `nil` ones emitted mid-resize and on
-  /// pager teardown. `nil` is logged but never clears the stored selection,
-  /// so the page survives switching between variants.
+  /// Logs every write; `nil` (emitted mid-resize and on teardown) is logged
+  /// but never clears the selection.
   func select(_ value: Int?) {
     selectionWrites.append(SelectionWrite(value: value, timestamp: .now))
-    if selectionWrites.count > 6 {
-      selectionWrites.removeFirst(selectionWrites.count - 6)
+    if selectionWrites.count > Constants.maxLoggedWrites {
+      selectionWrites.removeFirst(selectionWrites.count - Constants.maxLoggedWrites)
     }
     guard let value else { return }
     selection = value

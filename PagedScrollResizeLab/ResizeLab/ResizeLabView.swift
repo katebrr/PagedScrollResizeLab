@@ -1,7 +1,6 @@
 import SwiftUI
 
-/// Reproduces a paged `ScrollView` losing page alignment when its container
-/// is resized, next to a `TabView(.page)` control and a workaround.
+/// Paged `ScrollView` resize bug next to a `TabView(.page)` control and a workaround.
 struct ResizeLabView: View {
   @State private var viewModel = ResizeLabViewModel()
 
