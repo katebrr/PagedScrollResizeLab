@@ -1,12 +1,9 @@
 import SwiftUI
 
-// MARK: - Resize Lab
-
-/// Reproduces the paged-scroll-loses-alignment-on-window-resize bug
-/// against isolated pager variants, with live scroll instrumentation.
+/// Reproduces a paged `ScrollView` losing page alignment when its container
+/// is resized, next to a `TabView(.page)` control and a workaround.
 struct ResizeLabView: View {
-  @State private var variant: LabVariant = .minimal
-  @State private var snap: LabSnap = .paging
+  @State private var variant: LabVariant = .scrollView
   @State private var selection: Int? = 0
   @State private var metrics = ResizeLabMetrics()
 
@@ -14,12 +11,6 @@ struct ResizeLabView: View {
     VStack(spacing: 16) {
       Picker("Variant", selection: $variant) {
         ForEach(LabVariant.allCases, id: \.self) { Text($0.title) }
-      }
-      .pickerStyle(.segmented)
-      .padding(.horizontal, 16)
-
-      Picker("Snap", selection: $snap) {
-        ForEach(LabSnap.allCases, id: \.self) { Text($0.rawValue) }
       }
       .pickerStyle(.segmented)
       .padding(.horizontal, 16)
@@ -35,28 +26,22 @@ struct ResizeLabView: View {
     .navigationBarTitleDisplayMode(.inline)
   }
 
-  // MARK: - Pager Variants
+  // MARK: - Variants
 
   @ViewBuilder
   private var pager: some View {
     switch variant {
-    case .minimal:
-      scrollPager(selection: recordingBinding)
-    case .shim:
-      scrollPager(selection: shimBinding)
-    case .productionShape:
-      scrollPager(selection: shimBinding)
-        .animation(.easeInOut, value: selection)
-        .overlay(alignment: .top) { overlayBar }
+    case .scrollView:
+      scrollPager
     case .tabView:
       tabViewPager
     case .fix:
-      scrollPager(selection: recordingBinding)
+      scrollPager
         .preservesScrollPosition(of: selection)
     }
   }
 
-  private func scrollPager(selection: Binding<Int?>) -> some View {
+  private var scrollPager: some View {
     ScrollView(.horizontal) {
       HStack(spacing: 0) {
         ForEach(0..<LabVariant.pageCount, id: \.self) { index in
@@ -66,10 +51,15 @@ struct ResizeLabView: View {
       }
       .scrollTargetLayout()
     }
-    .labSnapBehavior(snap)
-    .scrollPosition(id: selection)
+    .scrollTargetBehavior(.paging)
+    .scrollPosition(id: recordingBinding)
     .scrollIndicators(.hidden)
-    .modifier(LabScrollInstrumentation(metrics: metrics))
+    .onScrollGeometryChange(for: CGFloat.self) { $0.contentOffset.x } action: { _, newValue in
+      metrics.contentOffsetX = newValue
+    }
+    .onScrollPhaseChange { _, newPhase, _ in
+      metrics.scrollPhase = String(describing: newPhase)
+    }
     .onGeometryChange(for: CGFloat.self) { $0.size.width } action: {
       metrics.containerWidth = $0
     }
@@ -94,8 +84,6 @@ struct ResizeLabView: View {
     }
   }
 
-  // MARK: - Selection Bindings
-
   private var recordingBinding: Binding<Int?> {
     Binding(
       get: { selection },
@@ -105,19 +93,6 @@ struct ResizeLabView: View {
       }
     )
   }
-
-  /// The production shim: nil writes are recorded but swallowed.
-  private var shimBinding: Binding<Int?> {
-    Binding(
-      get: { selection },
-      set: { newValue in
-        metrics.recordSelectionWrite(newValue)
-        if let newValue { selection = newValue }
-      }
-    )
-  }
-
-  // MARK: - Chrome
 
   private var pageIndicator: some View {
     HStack(spacing: 8) {
@@ -130,27 +105,12 @@ struct ResizeLabView: View {
     .padding(.bottom, 8)
     .animation(.snappy, value: selection)
   }
-
-  private var overlayBar: some View {
-    HStack {
-      Text("Overlay bar")
-        .font(.caption.bold())
-        .padding(.horizontal, 24)
-        .padding(.vertical, 8)
-        .background(Capsule().fill(Color(.systemFill)))
-      Spacer()
-    }
-    .padding(.horizontal, 16)
-    .padding(.top, 8)
-  }
 }
 
 // MARK: - LabVariant
 
 enum LabVariant: CaseIterable {
-  case minimal
-  case shim
-  case productionShape
+  case scrollView
   case tabView
   case fix
 
@@ -158,45 +118,10 @@ enum LabVariant: CaseIterable {
 
   var title: String {
     switch self {
-    case .minimal: "A · Minimal"
-    case .shim: "B · Nil shim"
-    case .productionShape: "C · Production"
-    case .tabView: "D · TabView"
-    case .fix: "E · Fix"
+    case .scrollView: "ScrollView"
+    case .tabView: "TabView"
+    case .fix: "ScrollView + fix"
     }
-  }
-}
-
-// MARK: - LabSnap
-
-enum LabSnap: String, CaseIterable {
-  case paging
-  case viewAligned
-}
-
-private extension View {
-  @ViewBuilder
-  func labSnapBehavior(_ snap: LabSnap) -> some View {
-    switch snap {
-    case .paging: scrollTargetBehavior(.paging)
-    case .viewAligned: scrollTargetBehavior(.viewAligned)
-    }
-  }
-}
-
-// MARK: - LabScrollInstrumentation
-
-private struct LabScrollInstrumentation: ViewModifier {
-  let metrics: ResizeLabMetrics
-
-  func body(content: Content) -> some View {
-    content
-      .onScrollGeometryChange(for: CGFloat.self) { $0.contentOffset.x } action: { _, newValue in
-        metrics.contentOffsetX = newValue
-      }
-      .onScrollPhaseChange { _, newPhase, _ in
-        metrics.scrollPhase = String(describing: newPhase)
-      }
   }
 }
 
