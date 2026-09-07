@@ -1,6 +1,6 @@
 # Paged ScrollView vs window resize (iOS 27)
 
-A paged `ScrollView` (`.scrollTargetBehavior(.paging)` + `.scrollPosition(id:)`) loses page alignment when its container is resized: the content offset is kept in points while the page width changes, and `scrollPosition(id:)` is written `nil` mid-resize. `TabView(.page)` survives the same resize. See [FEEDBACK.md](FEEDBACK.md) for the full report.
+A paged `ScrollView` (`.scrollTargetBehavior(.paging)` + `.scrollPosition(id:)`) loses page alignment when its container is resized: the content offset is kept in points while the page width changes, and `scrollPosition(id:)` is written `nil` mid-resize. `TabView(.page)` survives the same resize. See [FEEDBACK.md](FEEDBACK.md) for the full report. Filed as **FB24688033**.
 
 ## Reproduce
 

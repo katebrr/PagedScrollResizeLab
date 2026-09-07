@@ -1,4 +1,4 @@
-# Feedback Assistant report (draft)
+# Feedback Assistant report — filed as FB24688033
 
 **Title:** SwiftUI: paged ScrollView (.scrollTargetBehavior(.paging) + .scrollPosition(id:)) loses page alignment when resized on iOS 27
 
